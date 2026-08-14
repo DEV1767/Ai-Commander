@@ -17,6 +17,6 @@ def analyze(request: analyzeRequest):
     initial_state = {
         "raw_text": request.log,
     }
-    result=graph.invoke(initial_state)
-    
+    result = graph.invoke(initial_state)
+
     return result
