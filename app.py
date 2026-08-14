@@ -12,6 +12,11 @@ class analyzeRequest(BaseModel):
     log: str
 
 
+@app.get("/")
+def root():
+    return {"message": "Agent server is running"}
+
+
 @app.post("/analyze")
 def analyze(request: analyzeRequest):
     initial_state = {
