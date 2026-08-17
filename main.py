@@ -11,4 +11,5 @@ if __name__ == "__main__":
     }
 
     result = app.invoke(initial_state)
+
     print(result)

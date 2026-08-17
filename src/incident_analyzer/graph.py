@@ -5,34 +5,60 @@ from .nodes import (
     error_prevention_node,
     extractor_node,
     risk_analysis_node,
-    route_by_risk
+    route_by_risk_node,
+    route_by_category_node,
+    classify_error_node,
+    quick_fix_node,
 )
+
 from .state import ErrorState
 
 
 def build_graph():
+
     graph = StateGraph(ErrorState)
 
+    # Nodes
+    graph.add_node("classify_error", classify_error_node)
+    graph.add_node("quick_fix", quick_fix_node)
     graph.add_node("Extractor", extractor_node)
     graph.add_node("risk_analysis", risk_analysis_node)
     graph.add_node("error_explanation", error_explanation_node)
     graph.add_node("error_prevention", error_prevention_node)
 
-    graph.add_edge(START, "Extractor")
-    graph.add_edge("Extractor", "risk_analysis")
+    # START → Guardrail
+    graph.add_edge(START, "classify_error")
 
+    # Guardrail routing
     graph.add_conditional_edges(
-        "risk_analysis",
-        route_by_risk,
+        "classify_error",
+        route_by_category_node,
         {
-            "analyze": "error_explanation",
-            "skip": END,
-        }
+            "ignore": END,
+            "quick_fix": "quick_fix",
+            "detailed_analysis": "Extractor",
+        },
     )
 
-    graph.add_edge("risk_analysis", "error_prevention")
+    # Quick command fix → END
+    graph.add_edge("quick_fix", END)
 
-    graph.add_edge("error_explanation", END)
+    # Detailed analysis pipeline
+    graph.add_edge("Extractor", "risk_analysis")
+
+    # Risk routing
+    graph.add_conditional_edges(
+        "risk_analysis",
+        route_by_risk_node,
+        {
+            "skip": END,
+            "analyze": "error_explanation",
+        },
+    )
+
+    # Explanation → Prevention → END
+    graph.add_edge("error_explanation", "error_prevention")
+
     graph.add_edge("error_prevention", END)
 
     return graph.compile()
