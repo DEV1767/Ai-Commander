@@ -19,6 +19,7 @@ class ErrorState(TypedDict, total=False):
 
     quick_fix: Optional[str]
     quick_explanation: Optional[str]
+    has_fix: Optional[bool]
 
 
 class Risk(BaseModel):
@@ -52,7 +53,27 @@ class Prevention(BaseModel):
 
 
 class QuickFix(BaseModel):
-    quick_fix: str = Field(description="The corrected command that the user should run")
+    title: str = Field(
+        description=(
+            "A short, specific label for the error, e.g. 'Git subcommand not "
+            "recognized' or 'PowerShell command not found'. Never output "
+            "'Unknown error' or any vague/generic placeholder."
+        )
+    )
+
+    has_fix: bool = Field(
+        description=(
+            "True if a corrected command can be confidently determined, "
+            "False if the intended command cannot be reliably guessed."
+        )
+    )
+
+    quick_fix: str = Field(
+        description=(
+            "The corrected command the user should run. If has_fix is False, "
+            "set this to an empty string."
+        )
+    )
 
     explanation: str = Field(
         description="A very short explanation of what was wrong with the original command"

@@ -29,6 +29,9 @@ def quick_fix_node(state: ErrorState) -> dict:
     return {
         "quick_fix": result["quick_fix"],
         "quick_explanation": result["explanation"],
+        "error": result["title"],
+        "logs": state["raw_text"],
+        "has_fix": result["has_fix"],
     }
 
 
