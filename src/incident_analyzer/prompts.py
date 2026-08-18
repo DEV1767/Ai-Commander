@@ -65,8 +65,7 @@ Rules:
 - Keep the explanation to 1-2 short sentences.
 - Do not invent commands or information that is not supported by the input.
 - Preserve the user's intended operation.
-- If the correct command cannot be determined confidently, say so
-  instead of guessing.
+- If the correct command cannot be determined confidently, say so instead of guessing.
 
 Return the result using the required structured output.
 
