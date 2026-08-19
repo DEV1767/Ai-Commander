@@ -21,6 +21,12 @@ class ErrorState(TypedDict, total=False):
     quick_explanation: Optional[str]
     has_fix: Optional[bool]
 
+    # V3 - Agent Action
+    can_fix: Optional[bool]
+    fix_reason: Optional[str]
+    action_response: Optional[str]
+    tool_used: Optional[str]
+
 
 class Risk(BaseModel):
     risk: Literal["High", "Medium", "Low"] = Field(
@@ -55,9 +61,10 @@ class Prevention(BaseModel):
 class QuickFix(BaseModel):
     title: str = Field(
         description=(
-            "A short, specific label for the error, e.g. 'Git subcommand not "
-            "recognized' or 'PowerShell command not found'. Never output "
-            "'Unknown error' or any vague/generic placeholder."
+            "A short, specific label for the error, e.g. "
+            "'Git subcommand not recognized' or "
+            "'PowerShell command not found'. "
+            "Never output 'Unknown error' or any vague/generic placeholder."
         )
     )
 
@@ -70,11 +77,28 @@ class QuickFix(BaseModel):
 
     quick_fix: str = Field(
         description=(
-            "The corrected command the user should run. If has_fix is False, "
-            "set this to an empty string."
+            "The corrected command the user should run. "
+            "If has_fix is False, set this to an empty string."
         )
     )
 
     explanation: str = Field(
-        description="A very short explanation of what was wrong with the original command"
+        description=(
+            "A very short explanation of what was wrong with the original command"
+        )
+    )
+
+
+class ActionDecision(BaseModel):
+    can_fix: bool = Field(
+        description=(
+            "True if the error can be safely corrected by "
+            "modifying the source code. False otherwise"
+        )
+    )
+    fix_reason: str = Field(
+        description=(
+            "Short explanation of why the error can or cannot "
+            "be automatically corrected"
+        )
     )
