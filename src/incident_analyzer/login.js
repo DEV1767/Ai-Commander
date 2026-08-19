@@ -6,7 +6,7 @@ function login(username, password) {
 
     console.log("Logging in...");
 
-    if (user.userDname === username) {
+    if (user.useDname === username) {
         return {
             success: true,
             user: user

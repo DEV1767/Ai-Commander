@@ -174,6 +174,10 @@ def action_node(state: ErrorState) -> dict:
 
     tools_used = []
 
+    proposed_edit = (
+        None  # will hold {file_path, old_code, new_code} once edit_file runs
+    )
+
     for _ in range(max_iterations):
 
         response = agent_model.invoke(messages)
@@ -182,6 +186,7 @@ def action_node(state: ErrorState) -> dict:
             return {
                 "action_response": response.content,
                 "tool_used": tools_used,
+                "proposed_edit": proposed_edit,
             }
 
         messages.append(response)
@@ -223,10 +228,26 @@ def action_node(state: ErrorState) -> dict:
 
             else:
 
+                # Force dry_run=True no matter what the model passes —
+                # the model should never be able to trigger a real write.
+                if tool_name == "edit_file":
+                    tool_args["dry_run"] = True
+
                 tool_result = tool.invoke(tool_args)
 
                 if tool_name not in tools_used:
                     tools_used.append(tool_name)
+
+                if (
+                    tool_name == "edit_file"
+                    and "old_code not found" not in str(tool_result)
+                    and "matched" not in str(tool_result)
+                ):
+                    proposed_edit = {
+                        "file_path": tool_args.get("file_path"),
+                        "old_code": tool_args.get("old_code"),
+                        "new_code": tool_args.get("new_code"),
+                    }
 
             print("\n--- TOOL USED ---")
             print(tool_name)
@@ -246,4 +267,5 @@ def action_node(state: ErrorState) -> dict:
             "before completing the investigation."
         ),
         "tool_used": tools_used,
+        "proposed_edit": proposed_edit,
     }

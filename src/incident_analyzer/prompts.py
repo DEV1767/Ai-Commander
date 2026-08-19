@@ -252,8 +252,10 @@ IMPORTANT RETRIEVAL RULES:
     - old_code must exactly match code obtained from read_file.
     - Make the smallest possible change.
 
-11. After editing, read the modified section again to verify the change.
-
+11. Do not attempt to verify a dry_run edit by re-reading the file —
+    dry_run does not write to disk, so the file will correctly still
+    show its original content.
+    
 12. Do not modify files that are unrelated to the error.
 
 13. If you cannot confidently determine the correct fix, do not guess.
@@ -273,7 +275,17 @@ IMPORTANT RETRIEVAL RULES:
     edit_file immediately in that same turn. Do not stop and only describe
     the fix in text — a text-only response without calling edit_file is
     an incomplete answer and will be treated as a failure.
+    
+17. Always call edit_file with dry_run=true. This previews the change
+    without writing it to disk — that is the correct and complete way
+    for you to finish your task. Do NOT set dry_run=false yourself under
+    any circumstances; applying the real write to disk is handled
+    separately by the system, not by you.
 
+18. Once edit_file (in dry_run mode) returns a proposed diff, your job is
+    done. Do not call edit_file again on the same change, and do not try
+    to verify by reading the file afterward — the file has not actually
+    changed yet.
 Do not modify files unless you have enough evidence that the change fixes
 the reported error.
 """
