@@ -9,7 +9,7 @@ def is_git_clean(project_root: Path) -> tuple[bool, str]:
     """
     try:
         result = subprocess.run(
-            ["git", "status", "--procelain"],
+            ["git", "status", "--porcelain"],
             cwd=project_root,
             capture_output=True,
             text=True,
