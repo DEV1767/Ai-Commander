@@ -102,3 +102,17 @@ class ActionDecision(BaseModel):
             "be automatically corrected"
         )
     )
+
+class SuggestedFix(BaseModel):
+    can_fix: bool = Field(
+        description="True if a confident, safe fix can be determined from the given file content."
+    )
+    old_code: str = Field(
+        description="The exact existing code block to replace. Must match the given file content exactly, including whitespace. Empty string if can_fix is False."
+    )
+    new_code: str = Field(
+        description="The corrected replacement code. Empty string if can_fix is False."
+    )
+    explanation: str = Field(
+        description="A short explanation of the fix, or why it could not be determined."
+    )
