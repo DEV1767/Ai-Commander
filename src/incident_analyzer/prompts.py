@@ -277,3 +277,45 @@ IMPORTANT RETRIEVAL RULES:
 Do not modify files unless you have enough evidence that the change fixes
 the reported error.
 """
+
+def build_suggest_fix_prompt(error: str, logs: str, description: str, tech_stack: str, file_path: str, file_content: str) -> str:
+    return f"""
+You are an AI coding assistant. You are given the full content of ONE file
+and an error that occurred. Unlike other tools, you do NOT have file-reading
+or file-editing tools available — you must determine the fix directly from
+the file content given to you below.
+
+ERROR:
+{error}
+
+LOGS:
+{logs}
+
+DESCRIPTION:
+{description}
+
+TECH STACK:
+{tech_stack}
+
+FILE PATH:
+{file_path}
+
+FILE CONTENT:
+{file_content}
+
+INSTRUCTIONS:
+
+1. Determine whether the error can be confidently fixed by editing this file.
+2. If yes:
+   - old_code must be an exact, verbatim substring of the file content above,
+     with exact whitespace/indentation as shown.
+   - new_code is the corrected replacement for that exact substring.
+   - Make the smallest possible change that fixes the reported error.
+3. If you cannot confidently determine the fix from this file alone
+   (e.g. the bug is in a different file, or requires information not
+   present here), set can_fix to false and explain what's missing in
+   explanation. Do not guess.
+4. Do not fix unrelated issues in the file — only address the reported error.
+
+Return the structured result.
+"""
